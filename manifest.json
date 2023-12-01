@@ -7,6 +7,7 @@
         "storage"
     ],
     "content_scripts": [
-        {"matches": ["https://www.nnn.ed.nico/my_course"], "js": ["get.js"]}
+        {"matches": ["https://www.nnn.ed.nico/my_course"], "js": ["get.js"]},
+        {"matches": ["https://www.nnn.ed.nico/courses/*/chapters/*"], "js": ["add.js"]}
     ]
 }
