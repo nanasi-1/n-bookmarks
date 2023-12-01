@@ -1,0 +1,9 @@
+{
+    "manifest_version": 3,
+    "name": "N Bookmarks",
+    "description": "N予備校の教材をブックマークしたい",
+    "version": "0.0.0",
+    "permissions": [
+        "storage"
+    ]
+}
