@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "N Bookmarks",
     "description": "N予備校の教材をブックマークしたい",
-    "version": "0.5.0",
+    "version": "1.0.0",
     "permissions": [
         "storage"
     ],

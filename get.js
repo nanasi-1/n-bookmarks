@@ -12,8 +12,8 @@
 window.addEventListener('urlChange', async () => {
     if (location.href !== 'https://www.nnn.ed.nico/my_course') return;
 
-    await chrome.storage.local.set({ lastAccess: (new Date()).toISOString() });
-    console.log((await chrome.storage.local.get('lastAccess')).lastAccess);
+    await sleep(100);
+    console.log('プログラム N Bookmark を起動します()');
 
     // 初期化が済んでいなければ初期化
     if (!(await getBookmarks())) {
@@ -23,10 +23,6 @@ window.addEventListener('urlChange', async () => {
 
     // ブックマークになるエリア
     const bookmarkArea = document.querySelector('[role="main"] > div > div:nth-child(2)');
-
-
-    await sleep(100);
-    console.log('プログラム N Bookmark を起動します()');
 
     // クラス一覧
     const container = document.querySelector('nav[aria-label="コース一覧"]>div');
@@ -64,6 +60,9 @@ window.addEventListener('urlChange', async () => {
     bookmarkArea.innerHTML = '';
     bookmarkArea.append(ul);
 });
+
+
+// 関数群
 
 /** ブックマークを取得する関数 @returns {Promise<Map<string, Bookmark>>} */
 async function getBookmarks() {
