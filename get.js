@@ -12,7 +12,7 @@
 window.addEventListener('urlChange', async () => {
     if (location.href !== 'https://www.nnn.ed.nico/my_course') return;
 
-    await sleep(100);
+    await sleep(150);
     console.log('プログラム N Bookmark を起動します()');
 
     // 初期化が済んでいなければ初期化
@@ -104,4 +104,5 @@ window.addEventListener('load', () => {
         attributes: true,
         characterData: true
     });
+    window.dispatchEvent(new CustomEvent('urlChange'));
 });
