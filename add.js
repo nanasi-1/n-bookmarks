@@ -1,15 +1,5 @@
 console.log('N Bookmark を起動します()');
 
-/**
- * @typedef Bookmark
- * @prop {string} url
- * @prop {string} title
- * @prop {string} chapterName
- * @prop {string} courseName
- * @prop {string} chapterUrl
- * @prop {string} courseUrl
- */
-
 window.addEventListener('load', async () => {
     console.log('ページが読み込まれた...はず...');
 
@@ -99,6 +89,7 @@ async function appendBtn(time, trial) {
 
 // ブックマークを取得する関数
 // ストレージには[pathname, Bookmark][]で保存、返すのはMap
+/** @returns {Promise<Map<string, Bookmark>>} */
 async function getBookmarks() {
     /** @type {{bookmarks: Bookmark[]}} */
     const bookmarks = await chrome.storage.local.get('bookmarks');
