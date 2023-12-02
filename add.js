@@ -13,7 +13,6 @@ window.addEventListener('urlChange', async e => {
 
     // 前と同じチャプターならreturn
     const pattern = new RegExp('https://www.nnn.ed.nico/courses/[0-9]*/chapters/[0-9]*');
-    console.log(e.detail?.match(pattern)?.[0], location.href.match(pattern)?.[0]);
     if(e.detail?.match(pattern)?.[0] === location.href.match(pattern)?.[0]) return;
 
     // 教材のliタグにイベントを追加
