@@ -1,16 +1,20 @@
 console.log('N Bookmark を起動します()');
 
-window.addEventListener('load', async () => {
+window.addEventListener('urlChange', async e => {
     if(!(new RegExp('https://www.nnn.ed.nico/courses/.*/chapters/.*')).test(location.href)) return;
     console.log('ページが読み込まれた...はず...');
 
     if ((new RegExp('/courses/.*/chapters/.*/.*/.*')).test(location.href)) {
         console.log('教材URLを検出');
-
         // ブックマークボタンを追加
         await sleep(500);
         appendBtn(100, 20);
     }
+
+    // 前と同じチャプターならreturn
+    const pattern = new RegExp('https://www.nnn.ed.nico/courses/[0-9]*/chapters/[0-9]*');
+    console.log(e.detail?.match(pattern)?.[0], location.href.match(pattern)?.[0]);
+    if(e.detail?.match(pattern)?.[0] === location.href.match(pattern)?.[0]) return;
 
     // 教材のliタグにイベントを追加
     document.querySelectorAll('ul[aria-label="課外教材リスト"] > li').forEach(li => {
@@ -95,30 +99,4 @@ async function appendBtn(time, trial) {
             }
         }
     }
-}
-
-// ブックマークを取得する関数
-// ストレージには[pathname, Bookmark][]で保存、返すのはMap
-/** @returns {Promise<Map<string, Bookmark>>} */
-async function getBookmarks() {
-    /** @type {{bookmarks: Bookmark[]}} */
-    const bookmarks = await chrome.storage.local.get('bookmarks');
-    if (!bookmarks.bookmarks) {
-        return null;
-    } else {
-        return new Map(JSON.parse(bookmarks.bookmarks));
-    }
-}
-
-/** 文字列をHTMLElementにする関数 @param {String} str @returns {HTMLElement} */
-function strToElement(str, inHTML = false) {
-    const tempEl = document.createElement(inHTML ? 'html' : 'body');
-    tempEl.innerHTML = str;
-    return inHTML ? tempEl : tempEl.firstElementChild;
-}
-
-function sleep(sec) {
-    return new Promise(resolve => {
-        setTimeout(() => { resolve(); }, sec);
-    })
 }
