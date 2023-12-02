@@ -10,20 +10,15 @@ console.log('N Bookmark を起動します()');
  * @prop {string} courseUrl
  */
 
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
     console.log('ページが読み込まれた...はず...');
 
-    if ((new RegExp('/courses/.*/chapters/.*/guide/.*')).test(location.href)) {
+    if ((new RegExp('/courses/.*/chapters/.*/.*/.*')).test(location.href)) {
         console.log('教材URLを検出');
+
         // ブックマークボタンを追加
-        try { // なんか失敗してたから一応囲っとく
-            /** @type {Document} */
-            const ifrDocument = document.querySelector('[aria-label="教材モーダル"]>iframe').contentDocument;
-            appendBookmarkBtn(ifrDocument);
-        } catch (e) {
-            alert('エラーが発生しました：' + e);
-            console.error(e);
-        }
+        await sleep(500);
+        appendBtn(100, 20);
     }
 
     // 教材のliタグにイベントを追加
@@ -33,9 +28,9 @@ window.addEventListener('load', () => {
             await sleep(500);
             console.info('教材が読み込まれました(多分)');
 
+            // ボタンを追加する
             /** @type {Document} */
-            const ifrDocument = document.querySelector('[aria-label="教材モーダル"]>iframe').contentDocument;
-            appendBookmarkBtn(ifrDocument);
+            appendBtn(100, 20);
         });
     });
 });
@@ -82,6 +77,24 @@ function appendBookmarkBtn(doc) {
 
     const header = doc.querySelector('header');
     header.insertBefore(btn, header.querySelector('#question-btn'));
+}
+
+// ループする方のボタンを追加する関数
+async function appendBtn(time, trial) {
+    for (let i = 0; i < trial; i++) { // エラー出るからループする
+        try {
+            const doc = document.querySelector('[aria-label="教材モーダル"]>iframe').contentDocument;
+            appendBookmarkBtn(doc);
+            console.info('ボタンを追加');
+            break;
+        } catch (e) {
+            await sleep(time);
+            if (i === trial - 1) {
+                alert('エラーが発生しました。再読み込みしてください：' + e);
+                throw new Error(e);
+            }
+        }
+    }
 }
 
 // ブックマークを取得する関数
