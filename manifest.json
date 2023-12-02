@@ -2,12 +2,11 @@
     "manifest_version": 3,
     "name": "N Bookmarks",
     "description": "N予備校の教材をブックマークしたい",
-    "version": "0.2.0",
+    "version": "0.5.0",
     "permissions": [
         "storage"
     ],
     "content_scripts": [
-        {"matches": ["https://www.nnn.ed.nico/my_course"], "js": ["get.js"]},
-        {"matches": ["https://www.nnn.ed.nico/courses/*/chapters/*"], "js": ["add.js"]}
+        {"matches": ["https://www.nnn.ed.nico/*"], "js": ["get.js", "add.js"]}
     ]
 }
