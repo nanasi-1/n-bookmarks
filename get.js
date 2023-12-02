@@ -66,12 +66,17 @@ window.addEventListener('urlChange', async () => {
 
 /** ブックマークを取得する関数 @returns {Promise<Map<string, Bookmark>>} */
 async function getBookmarks() {
-    /** @type {{bookmarks: Bookmark[]}} */
-    const bookmarks = await chrome.storage.local.get('bookmarks');
-    if (!bookmarks.bookmarks) {
-        return null;
-    } else {
-        return new Map(JSON.parse(bookmarks.bookmarks))
+    try {
+        /** @type {{bookmarks: Bookmark[]}} */
+        const bookmarks = await chrome.storage.local.get('bookmarks');
+        if (!bookmarks.bookmarks) {
+            return null;
+        } else {
+            return new Map(JSON.parse(bookmarks.bookmarks))
+        }
+    } catch (e) {
+        alert('エラーが発生しました。再読み込みしてください。');
+        throw new Error('エラーが発生しました:', e);
     }
 }
 
