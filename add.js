@@ -1,4 +1,4 @@
-console.log('こんちゃ');
+console.log('N Bookmark を起動します()');
 
 /**
  * @typedef Bookmark
@@ -8,16 +8,32 @@ console.log('こんちゃ');
  */
 
 window.addEventListener('load', () => {
-    console.log('読み込み');
+    console.log('ページが読み込まれた...はず...');
 
-    /** @type {Document} */
-    const ifrDocument = document.querySelector('[aria-label="教材モーダル"]>iframe').contentDocument;
+    if ((new RegExp('/courses/.*/chapters/.*/guide/.*')).test(location.href)) {
+        console.log('教材URLを検出');
+        // ブックマークボタンを追加
+        try { // なんか失敗してたから一応囲っとく
+            /** @type {Document} */
+            const ifrDocument = document.querySelector('[aria-label="教材モーダル"]>iframe').contentDocument;
+            appendBookmarkBtn(ifrDocument);
+        } catch (e) {
+            alert('エラーが発生しました：' + e);
+            console.error(e);
+        }
+    }
 
-    // CSSを挿入
-    const link = strToElement(`<link rel="stylesheet" href="${chrome.runtime.getURL('style.css')}"></link>`);
-    document.head.append(link);
+    // 教材のliタグにイベントを追加
+    document.querySelectorAll('ul[aria-label="課外教材リスト"] > li').forEach(li => {
+        li.addEventListener('click', async () => {
+            await sleep(500);
+            console.info('教材が読み込まれました(多分)');
 
-    appendBookmarkBtn(ifrDocument);
+            /** @type {Document} */
+            const ifrDocument = document.querySelector('[aria-label="教材モーダル"]>iframe').contentDocument;
+            appendBookmarkBtn(ifrDocument);
+        });
+    });
 });
 
 /** ブックマークのボタンを追加する関数 @param {Document} doc */
@@ -40,4 +56,10 @@ function strToElement(str, inHTML = false) {
     const tempEl = document.createElement(inHTML ? 'html' : 'body');
     tempEl.innerHTML = str;
     return inHTML ? tempEl : tempEl.firstElementChild;
+}
+
+function sleep(sec) {
+    return new Promise(resolve => {
+        setTimeout(() => { resolve(); }, sec);
+    })
 }
