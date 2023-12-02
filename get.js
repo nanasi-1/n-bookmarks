@@ -4,7 +4,7 @@
     console.log((await chrome.storage.local.get('lastAccess')).lastAccess);
 
     // 初期化が済んでいなければ初期化
-    if (!(await chrome.storage.local.get('bookmarks')).bookmarks) {
+    if (!(await getBookmarks())) {
         console.info('初期化しました');
         await chrome.storage.local.set({ bookmarks: JSON.stringify([]) });
     }
@@ -27,7 +27,7 @@ async function getBookmarks() {
     if (!bookmarks.bookmarks) {
         return null;
     } else {
-        return JSON.parse(bookmarks.bookmarks);
+        return new Map(JSON.parse(bookmarks.bookmarks))
     }
 }
 
