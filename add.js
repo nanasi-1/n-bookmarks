@@ -52,13 +52,19 @@ async function appendBookmarkBtn(doc) {
             console.info('ブックマークを解除しました');
         } else {
             // ブックマークしていない場合
+            const contentType = location.href.match(/exercise|movie|guide/)[0];
             const courseElem = document.querySelector('[aria-label="パンくずリスト"] li:nth-child(3)>a');
             const chapterElem = document.querySelector('[aria-label="パンくずリスト"] li:nth-child(5)>a');
+            console.log(contentType);
+            const title = 
+                contentType === 'guide' ? 
+                doc.querySelector('#iframe').contentDocument.querySelector("div.book-header>h1>a").textContent : 
+                (contentType === 'movie' ? doc.querySelector('h1>span').textContent : doc.querySelector('h1.resource-title').textContent);
 
             /** @type {Bookmark} */
             const newBookmark = {
                 url: location.href,
-                title: doc.querySelector('#iframe').contentDocument.querySelector("div.book-header>h1>a").textContent,
+                title,
                 chapterName: chapterElem.textContent,
                 courseName: courseElem.textContent,
                 courseUrl: courseElem.href,
