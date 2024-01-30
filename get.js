@@ -22,23 +22,10 @@ window.addEventListener('urlChange', async () => {
     }
 
     // ブックマークになるエリア
-    const bookmarkArea = document.querySelector('[role="main"] > div > div:nth-child(2)');
-
-    async function getContainer() { // 読み込みの問題をforでゴリ押す
-        for (let i = 0; i < 20; i++) {
-            const result =  document.querySelector('nav[aria-label="コース一覧"]>div');
-            if(result === null) {
-                await sleep(50);
-                if (i < 19) continue;
-                alert('エラーが発生しました。再読み込みしてください：' + e);
-                throw new Error('エラー', e);
-            };
-            return result;
-        }
-    }
+    const bookmarkArea = await loopGetElem('[role="main"] > div > div:nth-child(2)');
 
     // クラス一覧
-    const container = await getContainer();
+    const container = await loopGetElem('nav[aria-label="コース一覧"]>div');
     const ulClass = [...container.classList];
     ulClass.push(container.querySelector('ul:has(li>a)').classList[1]);
     const listTitleClass = [...container.querySelector('h3').classList].concat([...container.querySelector('h3').parentElement.classList]);
@@ -76,6 +63,20 @@ window.addEventListener('urlChange', async () => {
 
 
 // 関数群
+
+/** ループで要素を取得する関数 @returns {Promise<HTMLElement>} */
+async function loopGetElem(pattern, trial=20) {
+    for (let i = 0; i < trial; i++) {
+        const result =  document.querySelector(pattern);
+        if(result === null) {
+            await sleep(50);
+            if (i < trial - 1) continue;
+            alert('エラーが発生しました。再読み込みしてください。');
+            throw new Error('エラー：読み込みが終わりませんでした');
+        };
+        return result;
+    }
+}
 
 /** ブックマークを取得する関数 @returns {Promise<Map<string, Bookmark>>} */
 async function getBookmarks() {

@@ -53,8 +53,8 @@ async function appendBookmarkBtn(doc) {
         } else {
             // ブックマークしていない場合
             const contentType = location.href.match(/exercise|movie|guide/)[0];
-            const courseElem = document.querySelector('[aria-label="パンくずリスト"] li:nth-child(3)>a');
-            const chapterElem = document.querySelector('[aria-label="パンくずリスト"] li:nth-child(5)>a');
+            const courseElem = document.querySelector('[aria-label="パンくずリスト"] li:nth-child(2)>a');
+            const chapterElem = document.querySelector('[aria-label="パンくずリスト"] li:nth-child(3) span');
             console.log(contentType);
             const title = 
                 contentType === 'guide' ? 
