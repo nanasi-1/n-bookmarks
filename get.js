@@ -12,7 +12,7 @@
 window.addEventListener('urlChange', async () => {
     if (location.href !== 'https://www.nnn.ed.nico/my_course') return;
 
-    await sleep(150);
+    await sleep(100);
     console.log('プログラム N Bookmark を起動します()');
 
     // 初期化が済んでいなければ初期化
@@ -22,15 +22,15 @@ window.addEventListener('urlChange', async () => {
     }
 
     // ブックマークになるエリア
-    const bookmarkArea = document.querySelector('[role="main"] > div > div:nth-child(2)');
+    const bookmarkArea = await loopGetElem('[role="main"] > div > div:nth-child(2)');
 
     // クラス一覧
-    const container = document.querySelector('nav[aria-label="コース一覧"]>div');
+    const container = await loopGetElem('nav[aria-label="コース一覧"]>div');
     const ulClass = [...container.classList];
     ulClass.push(container.querySelector('ul:has(li>a)').classList[1]);
     const listTitleClass = [...container.querySelector('h3').classList].concat([...container.querySelector('h3').parentElement.classList]);
     const itemTitleClass = [container.querySelector('h4').classList[1]];
-    const aClass = [...container.querySelector('a').classList]
+    const aClass = [...container.querySelector('a').classList];
 
     // 表示エリアに表示
     const ul = strToElement(`
@@ -64,6 +64,20 @@ window.addEventListener('urlChange', async () => {
 
 // 関数群
 
+/** ループで要素を取得する関数 @returns {Promise<HTMLElement>} */
+async function loopGetElem(pattern, trial=20) {
+    for (let i = 0; i < trial; i++) {
+        const result =  document.querySelector(pattern);
+        if(result === null) {
+            await sleep(50);
+            if (i < trial - 1) continue;
+            alert('エラーが発生しました。再読み込みしてください。');
+            throw new Error('エラー：読み込みが終わりませんでした');
+        };
+        return result;
+    }
+}
+
 /** ブックマークを取得する関数 @returns {Promise<Map<string, Bookmark>>} */
 async function getBookmarks() {
     try {
@@ -75,7 +89,7 @@ async function getBookmarks() {
             return new Map(JSON.parse(bookmarks.bookmarks))
         }
     } catch (e) {
-        alert('エラーが発生しました。再読み込みしてください。');
+        alert('データの読み込みでエラーが発生しました。再読み込みしてください。');
         throw new Error('エラーが発生しました:', e);
     }
 }
