@@ -89,8 +89,7 @@ async function getBookmarks() {
             return new Map(JSON.parse(bookmarks.bookmarks))
         }
     } catch (e) {
-        alert('データの読み込みでエラーが発生しました。再読み込みしてください。');
-        throw new Error('エラーが発生しました:', e);
+        throw new Error('N-Bookmarks: データの読み込みエラーが発生しました:', e);
     }
 }
 
