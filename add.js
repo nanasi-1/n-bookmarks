@@ -2,13 +2,11 @@ console.log('N Bookmark を起動します()');
 
 window.addEventListener('urlChange', async e => {
     if(!(new RegExp('https://www.nnn.ed.nico/courses/.*/chapters/.*')).test(location.href)) return;
-    console.log('ページが読み込まれた...はず...');
 
     if ((new RegExp('/courses/.*/chapters/.*/.*/.*')).test(location.href)) {
-        console.log('教材URLを検出');
         // ブックマークボタンを追加
         await sleep(500);
-        appendBtn(100, 20);
+        await appendBtn(100, 20);
     }
 
     // 前と同じチャプターならreturn
@@ -19,16 +17,16 @@ window.addEventListener('urlChange', async e => {
     document.querySelectorAll('ul[aria-label="課外教材リスト"] > li').forEach(li => {
         li.addEventListener('click', async () => {
             await sleep(500);
-            console.info('教材が読み込まれました(多分)');
-
             // ボタンを追加する
-            appendBtn(100, 20);
+            await appendBtn(100, 20);
         });
     });
 });
 
 /** ブックマークのボタンを追加する関数 @param {Document} doc */
 async function appendBookmarkBtn(doc) {
+    if(document.querySelector('#bookmark-btn')) return;
+
     const btn = strToElement('<button id="bookmark-btn" class="u-button type-primary"></button>');
     btn.style.position = 'absolute';
     btn.style.right = '130px';
@@ -85,6 +83,7 @@ async function appendBookmarkBtn(doc) {
         }
     });
 
+    if(document.querySelector('#bookmark-btn')) return; // もう一回
     const header = doc.querySelector('header');
     header.insertBefore(btn, header.querySelector('#question-btn'));
 }
@@ -99,8 +98,8 @@ async function appendBtn(time, trial) {
         } catch (e) {
             await sleep(time);
             if (i === trial - 1) {
-                alert('エラーが発生しました。再読み込みしてください：' + e);
-                throw new Error('エラー', e);
+                console.error('N-Bookmarks: ループじゃ解決しない問題が発生しました：', e);
+                break;
             }
         }
     }
