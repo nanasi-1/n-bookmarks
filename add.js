@@ -92,15 +92,28 @@ async function appendBookmarkBtn(doc) {
 async function appendBtn(time, trial) {
     for (let i = 0; i < trial; i++) { // エラー出るからループする
         try {
-            const doc = document.querySelector('[aria-label="教材モーダル"]>iframe').contentDocument;
-            await appendBookmarkBtn(doc);
-            break;
-        } catch (e) {
-            await sleep(time);
-            if (i === trial - 1) {
-                console.error('N-Bookmarks: ループじゃ解決しない問題が発生しました：', e);
-                break;
+                const result = await func();
+                return result;
+            } catch (e) {
+                await sleep(sleepMs);
+                if (i < trial) continue;
+
+                // ループじゃ解決しなかった場合
+                const errObj = new Error(`N Bookmarks：loop関数内でエラーが発生しました：${e.message}`);
+                if (isThrow) {
+                    console.error(errObj);
+                    throw errObj;
+                } else {
+                    console.info(errObj);
+                }
             }
         }
     }
+
+    const doc = await promiseLoop(
+        () => document.querySelector('[aria-label="教材モーダル"]>iframe').contentDocument, 
+        trial, time, false
+    );
+    if(doc === void 0) return;
+    await promiseLoop(async () => await appendBookmarkBtn(doc), trial, time)
 }
