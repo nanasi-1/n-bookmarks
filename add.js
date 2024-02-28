@@ -25,11 +25,12 @@ window.addEventListener('urlChange', async e => {
 
 /** ブックマークのボタンを追加する関数 @param {Document} doc */
 async function appendBookmarkBtn(doc) {
-    if(document.querySelector('#bookmark-btn')) return;
+    if(doc.querySelector('#bookmark-btn')) return;
+    const isPiP = !!doc.getElementById('pip-btn');
 
     const btn = strToElement('<button id="bookmark-btn" class="u-button type-primary"></button>');
     btn.style.position = 'absolute';
-    btn.style.right = '130px';
+    btn.style.right = `${isPiP ? 270 : 130}px`;
     btn.style.top = '0';
     btn.style.marginTop = '-10px';
     btn.style.padding = '0';
@@ -47,13 +48,12 @@ async function appendBookmarkBtn(doc) {
             chrome.storage.local.set({ bookmarks: JSON.stringify([...bookmarkData.entries()]) });
 
             e.target.textContent = 'ブックマーク';
-            console.info('ブックマークを解除しました');
+            console.info('N Bookmarks: ブックマークを解除しました');
         } else {
             // ブックマークしていない場合
             const contentType = location.href.match(/exercise|movie|guide/)[0];
             const courseElem = document.querySelector('[aria-label="パンくずリスト"] li:nth-child(2)>a');
             const chapterElem = document.querySelector('[aria-label="パンくずリスト"] li:nth-child(3) span');
-            console.log(contentType);
             const title = 
                 contentType === 'guide' ? 
                 doc.querySelector('#iframe').contentDocument.querySelector("div.book-header>h1>a").textContent : 
@@ -72,26 +72,25 @@ async function appendBookmarkBtn(doc) {
             // 初期化が済んでいなければ初期化
             if (!bookmarkData.size) {
                 await chrome.storage.local.set({ bookmarks: JSON.stringify([]) });
-                console.info('初期化しました');
+                console.info('N Bookmarks: 初期化しました');
             }
 
             bookmarkData.set(location.pathname, newBookmark);
             chrome.storage.local.set({ bookmarks: JSON.stringify([...bookmarkData.entries()]) });
 
             e.target.textContent = 'ブックマーク中';
-            console.info('ブックマークを追加しました：', newBookmark);
+            console.info('N Bookmarks: ブックマークを追加しました：', newBookmark);
         }
     });
-
-    if(document.querySelector('#bookmark-btn')) return; // もう一回
     const header = doc.querySelector('header');
     header.insertBefore(btn, header.querySelector('#question-btn'));
 }
 
 // ループする方のボタンを追加する関数
 async function appendBtn(time, trial) {
-    for (let i = 0; i < trial; i++) { // エラー出るからループする
-        try {
+    async function promiseLoop(func, trial, sleepMs, isThrow=true) {
+        for (let i = 0; i < trial; i++) {
+            try {
                 const result = await func();
                 return result;
             } catch (e) {
@@ -99,7 +98,8 @@ async function appendBtn(time, trial) {
                 if (i < trial) continue;
 
                 // ループじゃ解決しなかった場合
-                const errObj = new Error(`N Bookmarks：loop関数内でエラーが発生しました：${e.message}`);
+                console.log(e.message);
+                const errObj = new Error(`N Bookmarks：loop関数内でエラーが発生しました：${message}`);
                 if (isThrow) {
                     console.error(errObj);
                     throw errObj;
