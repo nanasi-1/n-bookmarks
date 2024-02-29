@@ -88,7 +88,7 @@ async function appendBookmarkBtn(doc) {
 
 // ループする方のボタンを追加する関数
 async function appendBtn(time, trial) {
-    async function promiseLoop(func, trial, sleepMs, isThrow=true) {
+    async function promiseLoop(func, trial, sleepMs, isThrow=false) {
         for (let i = 0; i < trial; i++) {
             try {
                 const result = await func();
