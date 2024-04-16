@@ -56,7 +56,7 @@ async function appendBookmarkBtn(doc) {
             const chapterElem = document.querySelector('[aria-label="パンくずリスト"] li:nth-child(3) span');
             const title = 
                 contentType === 'guide' ? 
-                doc.querySelector('#iframe').contentDocument.querySelector("div.book-header>h1").textContent.trim() : 
+                doc.querySelector(".resource-title").textContent: 
                 (contentType === 'movie' ? doc.querySelector('h1>span').textContent : doc.querySelector('h1.resource-title').textContent);
 
             /** @type {Bookmark} */
