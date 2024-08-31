@@ -1,7 +1,8 @@
 console.log('N Bookmark を起動します()');
 
+let currentChapter = ''
 window.addEventListener('urlChange', async e => {
-    if(!(new RegExp('https://www.nnn.ed.nico/courses/.*/chapters/.*')).test(location.href)) return;
+    if (!(new RegExp('https://www.nnn.ed.nico/courses/.*/chapters/.*')).test(location.href)) return;
 
     if ((new RegExp('/courses/.*/chapters/.*/.*/.*')).test(location.href)) {
         // ブックマークボタンを追加
@@ -11,32 +12,38 @@ window.addEventListener('urlChange', async e => {
 
     // 前と同じチャプターならreturn
     const pattern = new RegExp('https://www.nnn.ed.nico/courses/[0-9]*/chapters/[0-9]*');
-    if(e.detail?.match(pattern)?.[0] === location.href.match(pattern)?.[0]) return;
+    const newChapter = location.href.match(pattern)?.[0]
+    if (currentChapter === newChapter) return;
+    currentChapter = newChapter
 
     // 教材のliタグにイベントを追加
     document.querySelectorAll('ul[aria-label="課外教材リスト"] > li').forEach(li => {
         li.addEventListener('click', async () => {
-            await sleep(500);
+            removeBtn(document)
             // ボタンを追加する
-            await appendBtn(100, 20);
+            await appendBookmarkBtn(document);
         });
     });
 });
 
+/** ブックマークボタンを消す関数 */
+function removeBtn(doc) {
+    while (true) {
+        const elem = doc.querySelector('#bookmark-btn')
+        // 存在しない場合
+        if (!elem) break;
+        elem.remove()
+    }
+}
+
 /** ブックマークのボタンを追加する関数 @param {Document} doc */
 async function appendBookmarkBtn(doc) {
-    if(doc.querySelector('#bookmark-btn')) return;
-    const isPiP = !!doc.getElementById('pip-btn');
-
+    if (doc.querySelector('#bookmark-btn')) return;
     const btn = strToElement('<button id="bookmark-btn" class="u-button type-primary"></button>');
-    btn.style.position = 'absolute';
-    btn.style.right = `${isPiP ? 270 : 130}px`;
-    btn.style.top = '0';
-    btn.style.marginTop = '-10px';
-    btn.style.padding = '0';
-    btn.style.lineHeight = '42px';
-    btn.style.width = '130px';
     btn.textContent = (await getBookmarks())?.has(location.pathname) ? 'ブックマーク中' : 'ブックマーク';
+
+    const header = doc.querySelector('h3+div');
+    btn.className = header.querySelector('a').className
 
     // クリックしたらブックマーク
     btn.addEventListener('click', async e => {
@@ -54,10 +61,10 @@ async function appendBookmarkBtn(doc) {
             const contentType = location.href.match(/exercise|movie|guide/)[0];
             const courseElem = document.querySelector('[aria-label="パンくずリスト"] li:nth-child(2)>a');
             const chapterElem = document.querySelector('[aria-label="パンくずリスト"] li:nth-child(3) span');
-            const title = 
-                contentType === 'guide' ? 
-                doc.querySelector(".resource-title").textContent: 
-                (contentType === 'movie' ? doc.querySelector('h1>span').textContent : doc.querySelector('h1.resource-title').textContent);
+            const title =
+                contentType === 'guide' ?
+                    doc.querySelector("h3").textContent :
+                    (contentType === 'movie' ? doc.querySelector('h1>span').textContent : doc.querySelector('h1.resource-title').textContent);
 
             /** @type {Bookmark} */
             const newBookmark = {
@@ -82,13 +89,12 @@ async function appendBookmarkBtn(doc) {
             console.info('N Bookmarks: ブックマークを追加しました：', newBookmark);
         }
     });
-    const header = doc.querySelector('header');
     header.insertBefore(btn, header.querySelector('#question-btn'));
 }
 
 // ループする方のボタンを追加する関数
 async function appendBtn(time, trial) {
-    async function promiseLoop(func, trial, sleepMs, isThrow=false) {
+    async function promiseLoop(func, trial, sleepMs, isThrow = false) {
         for (let i = 0; i < trial; i++) {
             try {
                 const result = await func();
@@ -110,10 +116,5 @@ async function appendBtn(time, trial) {
         }
     }
 
-    const doc = await promiseLoop(
-        () => document.querySelector('[aria-label="教材モーダル"]>iframe').contentDocument, 
-        trial, time, false
-    );
-    if(doc === void 0) return;
-    await promiseLoop(async () => await appendBookmarkBtn(doc), trial, time)
+    await promiseLoop(async () => await appendBookmarkBtn(document), trial, time)
 }
